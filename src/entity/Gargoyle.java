@@ -20,3 +20,13 @@ public class Gargoyle extends Entity{
         setDefaultValues(col, row);
         getImage();
     }
+
+
+public void setDefaultValues(int col, int row) {
+        this.x = col*gp.tileSize;
+        this.y = row*gp.tileSize;
+        hit_point = 150;
+        visable = false;
+        direction = LEFT;
+        symbol = GARGOYLE;
+    }
