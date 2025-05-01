@@ -27,6 +27,28 @@ public class Zork extends Entity{
         symbol = ZORK;
     }
     
+    public void getImage() {
+        try {
+            standingUp = new BufferedImage[2];
+            standingUp[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing up 1.png"));
+            standingUp[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing up 2.png"));
+            
+            standingDown = new BufferedImage[2];
+            standingDown[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing down 1.png"));
+            standingDown[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing down 2.png"));
+            
+            standingLeft = new BufferedImage[2];
+            standingLeft[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing left 1.png"));
+            standingLeft[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing left 2.png"));
+            
+            standingRight = new BufferedImage[2];
+            standingRight[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing right 1.png"));
+            standingRight[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing right 2.png"));
+            
+        }catch(IOException e) {
+            e.printStackTrace();            
+        }
+    }
     
 
 }
