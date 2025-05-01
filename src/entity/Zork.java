@@ -50,5 +50,36 @@ public class Zork extends Entity{
         }
     }
     
+    public void draw(Graphics2D g2) {
+        if(!visable)
+            return;
+        
+        spriteCounter++;
+        if(spriteCounter > 12) {
+            if(spriteNum == 1)
+                spriteNum = 0;
+            else spriteNum++;
+            spriteCounter = 0;
+        }
+        
+        BufferedImage image = null;
+       
+        switch(direction) {
+            case UP:
+                image = standingUp[spriteNum%2];
+                break;
+            case DOWN:
+                image = standingDown[spriteNum%2]; 
+                break;
+            case LEFT:
+                image = standingLeft[spriteNum];
+                break;
+            case RIGHT:
+                image = standingRight[spriteNum];
+                break;
+        }
+        
+        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+    }
 
 }
