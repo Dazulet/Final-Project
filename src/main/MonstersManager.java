@@ -60,7 +60,6 @@ public class MonstersManager {
                col*gp.tileSize == 2*gp.tileSize && row*gp.tileSize == 11*gp.tileSize)
                 continue;
             allowedPlacement = true;
-            // check if there is a monster in this position
             for(int i = monsters.length-1; i >= 0 && allowedPlacement; i--) {
                 if(monsters[i] == null)
                     break;
