@@ -10,7 +10,6 @@ public class BattleManager {
     
     Random randomGen;
     public int monsterIndex;
-    // state 0 = find who start, state 1 = player turn, state 2 = monster turn, state 3 = simultaneous, state 4 = heal after battle
     int battleState;
     boolean rolling;
     int diceCounter;
@@ -137,7 +136,6 @@ public class BattleManager {
                 }
                 else if(battleState == 3) {
                     gp.playSE(1);
-                    // player damage
                     int damage = (gp.player.dice[0]+1)*10 + gp.player.dice[1]+1;
                     if(gp.player.dice[0] == gp.player.dice[1])
                         damage += 100;
@@ -146,7 +144,6 @@ public class BattleManager {
                     if(gp.monstersM.monsters[monsterIndex].hit_point <= 0)
                         gp.monstersM.monsters[monsterIndex].hit_point = 0;
                     
-                    // monster damage
                     damage = (gp.monstersM.monsters[monsterIndex].dice[0]+1)*10 + gp.monstersM.monsters[monsterIndex].dice[1]+1;
                     if(gp.monstersM.monsters[monsterIndex].symbol == Entity.ZORK && gp.monstersM.monsters[monsterIndex].dice[0] == gp.monstersM.monsters[monsterIndex].dice[1])
                         damage += 100;
