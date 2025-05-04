@@ -40,5 +40,143 @@ public class MinesManager {
         }
 
     }
+    void setMines() {
+        this.total_num = 5;
+        this.mines = new Mine[this.total_num];
+        Random random = new Random();
+
+        while(true) {
+            int var10000;
+            int col;
+            int row;
+            int tileNum;
+            do {
+                do {
+                    do {
+                        do {
+                            do {
+                                do {
+                                    do {
+                                        do {
+                                            if (this.total_num <= 0) {
+                                                return;
+                                            }
+
+                                            Objects.requireNonNull(this.gp);
+                                            col = random.nextInt(30);
+                                            Objects.requireNonNull(this.gp);
+                                            row = random.nextInt(16);
+                                            tileNum = this.gp.tileM.mapTileNum[col][row];
+                                            Objects.requireNonNull(this.gp);
+                                            var10000 = col * 48;
+                                            Objects.requireNonNull(this.gp);
+                                            if (var10000 != 17 * 48) {
+                                                break;
+                                            }
+
+                                            Objects.requireNonNull(this.gp);
+                                            var10000 = row * 48;
+                                            Objects.requireNonNull(this.gp);
+                                        } while(var10000 == 1 * 48);
+
+                                        Objects.requireNonNull(this.gp);
+                                        var10000 = col * 48;
+                                        Objects.requireNonNull(this.gp);
+                                        if (var10000 != 16 * 48) {
+                                            break;
+                                        }
+
+                                        Objects.requireNonNull(this.gp);
+                                        var10000 = row * 48;
+                                        Objects.requireNonNull(this.gp);
+                                    } while(var10000 == 1 * 48);
+
+                                    Objects.requireNonNull(this.gp);
+                                    var10000 = col * 48;
+                                    Objects.requireNonNull(this.gp);
+                                    if (var10000 != 17 * 48) {
+                                        break;
+                                    }
+                                    
+                                    Objects.requireNonNull(this.gp);
+                                    var10000 = row * 48;
+                                    Objects.requireNonNull(this.gp);
+                                } while(var10000 == 2 * 48);
+
+                                Objects.requireNonNull(this.gp);
+                                var10000 = col * 48;
+                                Objects.requireNonNull(this.gp);
+                                if (var10000 != 16 * 48) {
+                                    break;
+                                }
+
+                                Objects.requireNonNull(this.gp);
+                                var10000 = row * 48;
+                                Objects.requireNonNull(this.gp);
+                            } while(var10000 == 2 * 48);
+
+                            Objects.requireNonNull(this.gp);
+                            var10000 = col * 48;
+                            Objects.requireNonNull(this.gp);
+                            if (var10000 != 1 * 48) {
+                                break;
+                            }
+
+                            
+                            Objects.requireNonNull(this.gp);
+                            var10000 = row * 48;
+                            Objects.requireNonNull(this.gp);
+                        } while(var10000 == 10 * 48);
+
+                        Objects.requireNonNull(this.gp);
+                        var10000 = col * 48;
+                        Objects.requireNonNull(this.gp);
+                        if (var10000 != 1 * 48) {
+                            break;
+                        }
+
+                        Objects.requireNonNull(this.gp);
+                        var10000 = row * 48;
+                        Objects.requireNonNull(this.gp);
+                    } while(var10000 == 11 * 48);
+
+                    Objects.requireNonNull(this.gp);
+                    var10000 = col * 48;
+                    Objects.requireNonNull(this.gp);
+                    if (var10000 != 2 * 48) {
+                        break;
+                    }
+
+                    Objects.requireNonNull(this.gp);
+                    var10000 = row * 48;
+                    Objects.requireNonNull(this.gp);
+                } while(var10000 == 10 * 48);
+                Objects.requireNonNull(this.gp);
+                var10000 = col * 48;
+                Objects.requireNonNull(this.gp);
+                if (var10000 != 2 * 48) {
+                    break;
+                }
+
+                Objects.requireNonNull(this.gp);
+                var10000 = row * 48;
+                Objects.requireNonNull(this.gp);
+            } while(var10000 == 11 * 48);
+
+            boolean allowedPlacement = true;
+
+            int i;
+            for(i = this.gp.monstersM.monsters.length - 1; i >= 0 && allowedPlacement && this.gp.monstersM.monsters[i] != null; --i) {
+                var10000 = this.gp.monstersM.monsters[i].x;
+                Objects.requireNonNull(this.gp);
+                if (var10000 == col * 48) {
+                    var10000 = this.gp.monstersM.monsters[i].y;
+                    Objects.requireNonNull(this.gp);
+                    if (var10000 == row * 48) {
+                        allowedPlacement = false;
+                    }
+                }
+            }
+
 
 }
