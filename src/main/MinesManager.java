@@ -196,5 +196,30 @@ public class MinesManager {
         }
     }
 
-
+    public void setExplosion(Mine mine) {
+        
+        explosion = true;
+        explosionX = mine.x;
+        explosionY = mine.y;
+        gp.playSE(3);
+        
+    }
+    
+    public void explode(Graphics2D g2) {
+        
+        if(!explosion)
+            return;
+            
+        explosionCounter++;
+        g2.drawImage(images[explosionCounter%13], explosionX, explosionY, gp.tileSize, gp.tileSize, null);
+        if(explosionCounter == 38) {
+            explosionCounter = 0;
+            explosion = false;
+            if(gp.player.hit_point <= 0) {
+                gp.player.hit_point = 0;
+                gp.es.setTitleTexts("You Died :(\nNumber of steps: " + gp.player.steps);
+                gp.panelState = gp.END;
+            }
+        } 
+    }
 }
