@@ -18,4 +18,13 @@ public class Mine extends Entity {
         this.y = row * 48;
         this.symbol = 'm';
     }
+    
+    public void draw(Graphics2D g2) {
+        g2.setColor(Color.black);
+        int var10001 = this.x;
+        int var10002 = this.y;
+        Objects.requireNonNull(this.gp);
+        Objects.requireNonNull(this.gp);
+        g2.fillRect(var10001, var10002, 48, 48);
+    }
 }
