@@ -1,4 +1,4 @@
-package main;
+    package main;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -177,6 +177,24 @@ public class MinesManager {
                     }
                 }
             }
+
+            for(i = this.mines.length - 1; i >= 0 && allowedPlacement && this.mines[i] != null; --i) {
+                var10000 = this.mines[i].x;
+                Objects.requireNonNull(this.gp);
+                if (var10000 == col * 48) {
+                    var10000 = this.mines[i].y;
+                    Objects.requireNonNull(this.gp);
+                    if (var10000 == row * 48) {
+                        allowedPlacement = false;
+                    }
+                }
+            }
+
+            if (this.gp.tileM.tiles[tileNum].symbol == 'm' && allowedPlacement) {
+                this.mines[--this.total_num] = new Mine(this.gp, col, row);
+            }
+        }
+    }
 
 
 }
