@@ -26,4 +26,19 @@ public class MinesManager {
         this.setMines();
         this.setImages();
     }
+    
+    void setImages() {
+        this.images = new BufferedImage[13];
+
+        try {
+            for(int i = 0; i < 13; ++i) {
+                String path = "Dungeon Survivor/res/explosion/" + (i + 1) + ".png";
+                this.images[i] = ImageIO.read(new File(path));
+            }
+        } catch (IOException var3) {
+            var3.printStackTrace();
+        }
+
+    }
+
 }
