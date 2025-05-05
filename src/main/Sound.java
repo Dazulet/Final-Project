@@ -16,4 +16,16 @@ public class Sound {
         soundPaths[2] = "Dungeon Survivor/res/sounds/move.wav";
         soundPaths[3] = "Dungeon Survivor/res/sounds/explosion.wav";
     }
-Ъ
+
+    public void setFile(int i) {
+        try {
+            File soundFile = new File(soundPaths[i]);
+            AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
+            clip = AudioSystem.getClip();
+            clip.open(ais);
+        } catch (Exception e) {
+            System.out.println("Ошибка загрузки звука: " + soundPaths[i]);
+            e.printStackTrace();
+        }
+    }
+}
