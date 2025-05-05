@@ -1,4 +1,19 @@
 package main;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
 
-public class Sound {}
+public class Sound {
+
+    Clip clip;
+    String[] soundPaths = new String[5];
+
+    public Sound() {
+        soundPaths[0] = "Dungeon Survivor/res/sounds/dice.wav";
+        soundPaths[1] = "Dungeon Survivor/res/sounds/Hit_Hurt.wav";
+        soundPaths[2] = "Dungeon Survivor/res/sounds/move.wav";
+        soundPaths[3] = "Dungeon Survivor/res/sounds/explosion.wav";
+    }
+Ъ
