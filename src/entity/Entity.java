@@ -17,13 +17,13 @@ public class Entity {
     public static final String LEFT = "left";
     public static final String RIGHT = "right";
 
-    public char symbol;
-    public int hit_point;
-    public int[] dice = new int[2];
-    public int x, y, speed, movingCounter, steps;
-    public boolean moving;
-    protected boolean facing;
-    public boolean visable;
+	public char symbol;
+	public int hit_point;
+	public int max_hit_point;
+	public int[] dice = new int[2];  int x, y, speed, movingCounter, steps;
+	public boolean moving;
+	protected boolean facing;
+	public boolean visable;
 
     public BufferedImage[] runningUp;
     public BufferedImage[] runningDown;
@@ -41,5 +41,17 @@ public class Entity {
     public int spriteCounter = 0;
     public int spriteNum = 0;
 
+	public void setDefaultValues() {
+
+		this.direction = DOWN;
+		this.visable = true;
+		this.moving = false;
+		this.collisionOn = false;
+		this.spriteCounter = 0;
+		this.spriteNum = 0;
+		this.dice = new int[2];
+
+	}
+    
     public void draw(Graphics2D g2) {}
 }
