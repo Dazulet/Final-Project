@@ -41,17 +41,22 @@ public class Entity {
     public int spriteCounter = 0;
     public int spriteNum = 0;
 
-	public void setDefaultValues() {
+    public int baseAttackDamage = 10;
+    public double critChance = 0.05;
+    public double critDamageMultiplier = 1.5;
+    public int experienceDropped = 0;
 
-		this.direction = DOWN;
-		this.visable = true;
-		this.moving = false;
-		this.collisionOn = false;
-		this.spriteCounter = 0;
-		this.spriteNum = 0;
-		this.dice = new int[2];
+	
+    public void setDefaultValues() {
 
-	}
+	this.direction = DOWN;
+	this.visable = true;
+	this.moving = false;
+	this.collisionOn = false;
+	this.spriteCounter = 0;
+	this.spriteNum = 0;
+	this.dice = new int[2];
+}
     
     public void draw(Graphics2D g2) {}
 }
