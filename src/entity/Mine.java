@@ -1,30 +1,47 @@
-package entity;
+package src.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Objects;
 import src.main.GamePanel;
 
 public class Mine extends Entity {
-    GamePanel gp;
-    public static final int number = 5;
-    final int damage = 100;
 
-    public Mine(GamePanel gp, int col, int row) {
+    GamePanel gp;
+
+    public static final int number = 5;
+
+    private final int damage = 100;
+
+    private int initialCol, initialRow;
+
+    public Mine(GamePanel gp, int col, int row){
         this.gp = gp;
-        Objects.requireNonNull(gp);
-        this.x = col * 48;
-        Objects.requireNonNull(gp);
-        this.y = row * 48;
-        this.symbol = 'm';
+        this.initialCol = col;
+        this.initialRow = row;
+        setDefaultValues();
     }
-    
+
+    @Override
+    public void setDefaultValues() {
+        super.setDefaultValues();
+
+        this.x = initialCol * gp.tileSize;
+        this.y = initialRow * gp.tileSize;
+        this.symbol = MINE;
+        this.visable = false;
+        this.max_hit_point = 1;
+        this.hit_point = 1;
+
+    }
+
+
+    @Override
     public void draw(Graphics2D g2) {
-        g2.setColor(Color.black);
-        int var10001 = this.x;
-        int var10002 = this.y;
-        Objects.requireNonNull(this.gp);
-        Objects.requireNonNull(this.gp);
-        g2.fillRect(var10001, var10002, 48, 48);
+
+    }
+
+
+    public int getDamage() {
+        return damage;
     }
 }
