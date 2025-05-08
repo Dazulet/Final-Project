@@ -1,85 +1,92 @@
-package entity;
+package src.entity;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-
 import src.main.GamePanel;
 
 public class Zork extends Entity{
     GamePanel gp;
-    static final int number = 1;
-    
+
+
+    private int initialCol, initialRow;
+
     public Zork(GamePanel gp, int col, int row) {
         this.gp = gp;
-        setDefaultValues(col, row);
+        this.initialCol = col;
+        this.initialRow = row;
+        setDefaultValues();
         getImage();
     }
-    
-    public void setDefaultValues(int col, int row) {
-        this.x = col*gp.tileSize;
-        this.y = row*gp.tileSize;
-        hit_point = 500;
+
+    @Override
+    public void setDefaultValues() {
+        super.setDefaultValues();
+
+        this.x = initialCol * gp.tileSize;
+        this.y = initialRow * gp.tileSize;
+
+        max_hit_point = 500;
+        hit_point = max_hit_point;
         visable = false;
-        direction = DOWN;
+
         symbol = ZORK;
+
+        experienceDropped = 500;
+        critChance = 0.15;
+        critDamageMultiplier = 1.75;
+
     }
-    
+
     public void getImage() {
         try {
             standingUp = new BufferedImage[2];
             standingUp[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing up 1.png"));
             standingUp[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing up 2.png"));
-            
+
             standingDown = new BufferedImage[2];
             standingDown[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing down 1.png"));
             standingDown[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing down 2.png"));
-            
+
             standingLeft = new BufferedImage[2];
             standingLeft[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing left 1.png"));
             standingLeft[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing left 2.png"));
-            
+
             standingRight = new BufferedImage[2];
             standingRight[0] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing right 1.png"));
             standingRight[1] = ImageIO.read(getClass().getResourceAsStream("/res/zork/standing right 2.png"));
-            
+
         }catch(IOException e) {
-            e.printStackTrace();            
+            e.printStackTrace();
+        }catch(IllegalArgumentException e) {
+            System.err.println("Error loading zork images: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-    
+
+    @Override
     public void draw(Graphics2D g2) {
         if(!visable)
             return;
-        
+
         spriteCounter++;
         if(spriteCounter > 12) {
-            if(spriteNum == 1)
-                spriteNum = 0;
-            else spriteNum++;
+            spriteNum = (spriteNum + 1) % 2;
             spriteCounter = 0;
         }
-        
-        BufferedImage image = null;
-       
-        switch(direction) {
-            case UP:
-                image = standingUp[spriteNum%2];
-                break;
-            case DOWN:
-                image = standingDown[spriteNum%2]; 
-                break;
-            case LEFT:
-                image = standingLeft[spriteNum];
-                break;
-            case RIGHT:
-                image = standingRight[spriteNum];
-                break;
-        }
-        
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
-    }
 
+        BufferedImage image = null;
+        switch(direction) {
+            case UP:    image = standingUp[spriteNum];    break;
+            case DOWN:  image = standingDown[spriteNum];  break;
+            case LEFT:  image = standingLeft[spriteNum];  break;
+            case RIGHT: image = standingRight[spriteNum]; break;
+            default:    image = standingDown[spriteNum];  break;
+        }
+
+        if (image != null) {
+            g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        }
+    }
 }
