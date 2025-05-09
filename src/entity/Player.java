@@ -45,20 +45,46 @@ public class Player extends Entity{
         getPlayerImage();
     }
 
+    @Override
     public void setDefaultValues() {
-        x = 17 * gp.tileSize;
-        y = 1 * gp.tileSize;
-        speed = 1;
-        steps = 0;
-        facing = true;
-        direction = DOWN;
-        hit_point = 400;
-        symbol = HERO;
-        gameState = MOVE;
-        movingState = 0;
-        forcedMove = false;
+	super.setDefaultValues();
+	x = 17 * gp.tileSize;
+	y = 1 * gp.tileSize;
+	speed = 1;
+	steps = 0;
+	facing = true;
+	direction = DOWN;
+	symbol = HERO;
+	gameState = MOVE;
+	movingState = 0;
+	forcedMove = false;
+	spriteNum = 0;
+	animationTick = 0;
+
+	level = 1;
+	experience = 0;
+	experienceToNextLevel = 100;
+	strength = 5;
+	dexterity = 5;
+	vitality = 95;
+	intelligence = 5;
+	maxMana = 20 + (intelligence * 5);
+	mana = maxMana;
+	max_hit_point = 50 + (vitality * 10);
+	hit_point = max_hit_point;
+	critChance = 0.05 + (dexterity * 0.005);
+	critDamageMultiplier = 1.5;
     }
 
+    public void gainExperience(int amount) {
+	if (amount <= 0) return;
+	experience += amount;
+	System.out.println("Player gained " + amount + " XP. Total XP: " + experience + "/" + experienceToNextLevel);
+	while (experience >= experienceToNextLevel) {
+		levelUp();
+	}
+    }
+	
     public void getPlayerImage() {
         try {
             runningUp = new BufferedImage[4];
