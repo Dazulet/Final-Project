@@ -24,6 +24,21 @@ public class Player extends Entity{
     // from the code not the keys input
     public boolean forcedMove;
 
+	public int level;
+	public int experience;
+	public int experienceToNextLevel;
+	public int strength;
+	public int dexterity;
+	public int vitality;
+    
+	public int intelligence;
+	public int mana;
+	public int maxMana;
+
+	private int animationTick = 0;
+	private final int ANIMATION_SPEED_WALK = 12;
+	private final int ANIMATION_SPEED_IDLE = 15;
+
     public Player(GamePanel gp) {
         this.gp = gp;
         setDefaultValues();
