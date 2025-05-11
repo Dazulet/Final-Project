@@ -85,6 +85,30 @@ public class Player extends Entity{
 	}
     }
 	
+    private void levelUp() {
+	level++;
+	experience -= experienceToNextLevel;
+	experienceToNextLevel = (int) (experienceToNextLevel * 1.5) + 50;
+	strength += 1;
+	dexterity += 1;
+	vitality += 2;
+	intelligence += 1;
+	max_hit_point = 50 + (vitality * 10);
+	hit_point = max_hit_point;
+	maxMana = 20 + (intelligence * 5);
+	mana = maxMana;
+	critChance = 0.05 + (dexterity * 0.005);
+	System.out.println("LEVEL UP! Player is now level " + level + "!");
+	System.out.println("HP: " + hit_point + "/" + max_hit_point + " MP: " + mana + "/" + maxMana +
+			" Str: " + strength + " Dex: " + dexterity + " Vit: " + vitality + " Int: " + intelligence);
+	if(gp != null) gp.playSE(2);
+    }
+
+    public boolean canCastHeal(int manaCost) {
+	return mana >= manaCost;
+    }
+
+	
     public void getPlayerImage() {
         try {
             runningUp = new BufferedImage[4];
