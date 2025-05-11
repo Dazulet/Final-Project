@@ -108,6 +108,21 @@ public class Player extends Entity{
 	return mana >= manaCost;
     }
 
+    public void castHeal(int manaCost, int healAmountBase) {
+	if (canCastHeal(manaCost)) {
+		mana -= manaCost;
+		int actualHeal = healAmountBase + intelligence * 2;
+		hit_point += actualHeal;
+		if (hit_point > max_hit_point) {
+			hit_point = max_hit_point;
+		}
+		System.out.println("Player casts Heal! Restored " + actualHeal + " HP. Mana left: " + mana);
+
+	} else {
+		System.out.println("Not enough mana to cast Heal!");
+
+	}
+     }
 	
     public void getPlayerImage() {
         try {
