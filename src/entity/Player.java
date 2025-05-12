@@ -123,7 +123,18 @@ public class Player extends Entity{
 
 	}
      }
-	
+
+     public boolean canCastStrongAttack(int manaCost) {
+	return mana >= manaCost;
+     }
+
+     public void consumeManaForStrongAttack(int manaCost) {
+	if (canCastStrongAttack(manaCost)) {
+		mana -= manaCost;
+		System.out.println("Player prepares Strong Attack! Mana left: " + mana);
+	}
+    }
+
     public void getPlayerImage() {
         try {
             runningUp = new BufferedImage[4];
