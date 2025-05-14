@@ -1,4 +1,4 @@
-package main;
+package src.main;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -28,10 +28,10 @@ public class Sound {
             e.printStackTrace();
         }
     }
-    
+
     public void play() {
         if (clip != null) {
-            clip.setFramePosition(0); // чтобы звук начинался сначала при каждом воспроизведении
+            clip.setFramePosition(0);
             clip.start();
         }
     }
