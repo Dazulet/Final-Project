@@ -1,129 +1,234 @@
-package tile;
-
+package src.tile;
 
 import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.awt.Color;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.RescaleOp;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import src.main.GamePanel;
 
-public class TileManager {    
+public class TileManager {
 
-    public static final char map_tile  = 'm';
-    public static final char boss_tile = 'B';
-    public static final char village_a = 'a';
-    public static final char village_b = 'b';
-    public static final char village_c = 'c';
-	
+	public static final char map_tile  = 'm';
+	public static final char boss_tile = 'B';
+	public static final char village_a = 'a';
+	public static final char village_b = 'b';
+	public static final char village_c = 'c';
+
 	GamePanel gp;
 	public Tile[] tiles;
 	public int mapTileNum[][];
-	
-	public TileManager(GamePanel gp) {
+
+	public TileManager(GamePanel gp, String mapFilePath) {
 		this.gp = gp;
 		tiles = new Tile[10];
-		
+
 		mapTileNum = new int[gp.maxScreenCol][gp.maxScreenRow];
-		
+
 		getTileImage();
-		loadMap("/res/maps/map.txt");
+		loadMap(mapFilePath);
 	}
-	
+
 	public void getTileImage() {
-		
 		try {
-			
 			tiles[0] = new Tile();
 			tiles[0].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/000.png"));
 			tiles[0].collision = true;
-			
+			tiles[0].symbol = '0';
+
 			tiles[1] = new Tile();
 			tiles[1].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/boarder tile.png"));
 			tiles[1].collision = true;
-			
+			tiles[1].symbol = '1';
+
 			tiles[2] = new Tile();
 			tiles[2].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/map tile.png"));
+			tiles[2].collision = false;
 			tiles[2].symbol = map_tile;
-			
+
 			tiles[3] = new Tile();
 			tiles[3].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/mountain tile.png"));
 			tiles[3].collision = true;
-			
+			tiles[3].symbol = 'M';
+
 			tiles[4] = new Tile();
 			tiles[4].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/villageA.png"));
+			tiles[4].collision = false;
 			tiles[4].symbol = village_a;
-			
+
 			tiles[5] = new Tile();
 			tiles[5].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/villageB.png"));
+			tiles[5].collision = false;
 			tiles[5].symbol = village_b;
-			
+
 			tiles[6] = new Tile();
 			tiles[6].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/villageC.png"));
+			tiles[6].collision = false;
 			tiles[6].symbol = village_c;
-			
+
 			tiles[7] = new Tile();
 			tiles[7].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/boss tile.png"));
+			tiles[7].collision = false;
 			tiles[7].symbol = boss_tile;
-			
+
 		} catch (IOException e) {
+			System.err.println("Error loading tile images: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			System.err.println("Error: One or more tile image resources not found. Check paths in getTileImage(). " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
-	public void loadMap(String path) {
-		
-		InputStream	is = getClass().getResourceAsStream(path);
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
+	public void loadMap(String path) {
+		InputStream	is = getClass().getResourceAsStream(path);
+		if (is == null) {
+			System.err.println("Cannot find map file: " + path + ". Attempting to load default map.");
+			List<String> gamePanelMapFiles = gp.getMapFiles();
+			if (gamePanelMapFiles != null && !gamePanelMapFiles.isEmpty()) {
+				is = getClass().getResourceAsStream(gamePanelMapFiles.get(0));
+				if (is == null) {
+					System.err.println("CRITICAL ERROR: Default map also not found: " + gamePanelMapFiles.get(0));
+
+					for (int r = 0; r < gp.maxScreenRow; r++) {
+						for (int c = 0; c < gp.maxScreenCol; c++) {
+							mapTileNum[c][r] = 0;
+						}
+					}
+					return;
+				}
+				System.out.println("Loading default map instead: " + gamePanelMapFiles.get(0));
+			} else {
+				System.err.println("CRITICAL ERROR: No map files configured in GamePanel, cannot load any map.");
+				for (int r = 0; r < gp.maxScreenRow; r++) {
+					for (int c = 0; c < gp.maxScreenCol; c++) {
+						mapTileNum[c][r] = 0;
+					}
+				}
+				return;
+			}
+		}
+
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		int col = 0;
 		int row = 0;
-		
-		while(col < gp.maxScreenCol && row <gp.maxScreenRow) {
-			try {
+
+		try {
+			while(row < gp.maxScreenRow) {
 				String line = br.readLine();
-				String[] numbers = line.split(" ");
-				
-				for(;col < gp.maxScreenCol; col++) {
-					int num = Integer.parseInt(numbers[col]);
-					mapTileNum[col][row] = num;
+				if (line == null) {
+					for (int r = row; r < gp.maxScreenRow; r++) {
+						for (int c = 0; c < gp.maxScreenCol; c++) {
+							mapTileNum[c][r] = 0;
+						}
+					}
+					break;
 				}
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-			}	
-			
-			if(col == gp.maxScreenCol) {
+
+				String[] numbers = line.trim().split("\\s+");
 				col = 0;
+				for(; col < gp.maxScreenCol; col++) {
+					if (col < numbers.length && !numbers[col].isEmpty()) {
+						try {
+							int num = Integer.parseInt(numbers[col]);
+							if (num >= 0 && num < tiles.length) {
+								mapTileNum[col][row] = num;
+							} else {
+								System.err.println("Invalid tile number " + num + " in map " + path + " at " + (row+1) + "," + (col+1) + ". Using default tile 0.");
+								mapTileNum[col][row] = 0;
+							}
+						} catch (NumberFormatException e) {
+							System.err.println("Error parsing number in map file " + path + " at " + (row+1) + "," + (col+1) + ": '" + numbers[col] + "'. Using default tile 0.");
+							mapTileNum[col][row] = 0;
+						}
+					} else {
+						mapTileNum[col][row] = 0;
+					}
+				}
 				row++;
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+
+			for (int r = row; r < gp.maxScreenRow; r++) {
+				for (int c = (r == row ? col : 0) ; c < gp.maxScreenCol; c++) {
+					mapTileNum[c][r] = 0;
+				}
 			}
 		}
 	}
-	
+
 	public void draw(Graphics2D g2) {
-		
-		int col = 0;
-		int row = 0;
+		int currentDrawingCol = 0;
+		int currentDrawingRow = 0;
 		int x = 0;
 		int y = 0;
-		
-		while(col < gp.maxScreenCol && row < gp.maxScreenRow) {
-			int tileNum = mapTileNum[col][row];
-			
-			g2.drawImage(tiles[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
-			col++;
-			x += gp.tileSize;
-			
-			if(col == gp.maxScreenCol) {
-				col = 0;
-				x = 0;
-				row++;
-				y += gp.tileSize;
-			}
+
+		if (gp.player == null || gp.player.revealedTiles == null) {
+
+			g2.setColor(Color.BLACK);
+			g2.fillRect(0,0, gp.screenWidth, gp.screenHeight);
+			return;
 		}
-		
+
+
+		while(currentDrawingRow < gp.maxScreenRow) {
+			currentDrawingCol = 0;
+			x = 0;
+			while (currentDrawingCol < gp.maxScreenCol) {
+				int tileNum = mapTileNum[currentDrawingCol][currentDrawingRow];
+
+				boolean isVisibleBySpell = gp.player.isMapRevealedTemporarily;
+				boolean isCurrentlyInSight = gp.player.isTileCurrentlyVisible(currentDrawingCol, currentDrawingRow);
+				boolean isRevealed = gp.player.revealedTiles[currentDrawingCol][currentDrawingRow];
+
+
+				if (isVisibleBySpell) {
+
+					if (tiles[tileNum] != null && tiles[tileNum].image != null) {
+						g2.drawImage(tiles[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
+					} else {
+						g2.setColor(Color.DARK_GRAY);
+						g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+					}
+
+				} else if (isCurrentlyInSight) {
+
+					if (tiles[tileNum] != null && tiles[tileNum].image != null) {
+						g2.drawImage(tiles[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
+					} else {
+						g2.setColor(Color.DARK_GRAY);
+						g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+					}
+
+				} else if (isRevealed) {
+
+					if (tiles[tileNum] != null && tiles[tileNum].image != null) {
+						g2.drawImage(tiles[tileNum].image, x, y, gp.tileSize, gp.tileSize, null);
+
+
+					} else {
+						g2.setColor(Color.DARK_GRAY);
+						g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+					}
+				} else {
+
+					g2.setColor(Color.BLACK);
+					g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+				}
+				currentDrawingCol++;
+				x += gp.tileSize;
+			}
+			currentDrawingRow++;
+			y += gp.tileSize;
+		}
 	}
 }
