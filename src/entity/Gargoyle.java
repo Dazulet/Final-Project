@@ -67,8 +67,16 @@ public class Gargoyle extends Entity{
 
     @Override
     public void draw(Graphics2D g2) {
-        if(!visable)
-            return;
+        if(!visable) return;
+
+
+        if (gp != null && gp.player != null) {
+            int entityTileCol = this.x / gp.tileSize;
+            int entityTileRow = this.y / gp.tileSize;
+            if (!gp.player.isMapRevealedTemporarily && !gp.player.isTileCurrentlyVisible(entityTileCol, entityTileRow)) {
+                return;
+            }
+        } else { return; }
 
         spriteCounter++;
         if(spriteCounter > 12) {
