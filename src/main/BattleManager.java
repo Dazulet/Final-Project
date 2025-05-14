@@ -7,9 +7,13 @@ import src.entity.Player;
 public class BattleManager {
 
     GamePanel gp;
+
+
     Random randomGen;
     public int monsterIndex = -1;
+
     int battleState;
+
     boolean rolling;
     int diceCounter;
     int pauseCounter;
@@ -27,6 +31,10 @@ public class BattleManager {
     public BattleManager(GamePanel gp) {
         this.gp = gp;
         randomGen = new Random();
+    }
+
+    public int getBattleState() {
+        return battleState;
     }
 
     void setBattle() {
@@ -47,12 +55,15 @@ public class BattleManager {
         if (monsterIndex >= 0 && monsterIndex < gp.monstersM.monsters.length && gp.monstersM.monsters[monsterIndex] != null) {
             gp.player.gainExperience(gp.monstersM.monsters[monsterIndex].experienceDropped);
         }
+
         gp.player.gameState = gp.player.MOVE;
         gp.player.movingState = 0;
+
         if (monsterIndex >= 0 && monsterIndex < gp.monstersM.monsters.length && gp.monstersM.monsters[monsterIndex] != null) {
             gp.monstersM.monster_remaning--;
             gp.monstersM.monsters[monsterIndex] = null;
         }
+
         rolling = false;
         diceCounter = 0;
         battleState = 0;
@@ -64,12 +75,21 @@ public class BattleManager {
 
     private int calculateDamage(Entity attacker, Entity defender, int diceSumForDamage, double extraMultiplier) {
         if (attacker == null || defender == null) return 0;
-
         int baseDamage = diceSumForDamage;
+
         if (attacker instanceof Player) {
-            baseDamage += ((Player) attacker).strength;
+            baseDamage += ((Player) attacker).getTotalStrength();
+
+        } else {
+
+            if (defender instanceof Player){
+                baseDamage -= ((Player) defender).getArmorDefenseBonus();
+            }
         }
+
         baseDamage = (int)(baseDamage * extraMultiplier);
+
+        if (baseDamage < 1) baseDamage = 1;
 
         String critMessage = "";
         if (randomGen.nextDouble() < attacker.critChance) {
@@ -78,12 +98,17 @@ public class BattleManager {
         }
 
         String attackerName = (attacker instanceof Player) ? "Player" : "Monster(" + attacker.symbol + ")";
+        String defenderName = (defender instanceof Player) ? "Player" : "Monster(" + defender.symbol + ")";
+
+        String damageMessage = critMessage + attackerName + " dealt " + baseDamage + " to " + defenderName + "!";
+
         if (attacker == gp.player) {
-            lastPlayerActionInfo = critMessage + attackerName + " dealt " + baseDamage + " to " + defender.symbol + "!";
+            lastPlayerActionInfo = damageMessage;
         } else {
-            lastMonsterAttackInfo = critMessage + attackerName + " dealt " + baseDamage + " to Player!";
+            lastMonsterAttackInfo = damageMessage;
         }
         messageTimer = MESSAGE_DURATION;
+
         return baseDamage;
     }
 
@@ -97,15 +122,11 @@ public class BattleManager {
             }
         }
 
-
-
         if(gp.player.gameState == gp.player.MOVE) {
             for(int i = 0; i < gp.monstersM.monsters.length; i++) {
                 Entity monster = gp.monstersM.monsters[i];
-                if(monster != null &&
-                        gp.player.getX() == monster.getX() &&
-                        gp.player.getY() == monster.getY()) {
 
+                if(monster != null && gp.player.getX() == monster.getX() && gp.player.getY() == monster.getY()) {
                     monsterIndex = i;
                     monster.visable = true;
 
@@ -115,10 +136,10 @@ public class BattleManager {
                             case Entity.DOWN:  monster.direction = Entity.UP;    break;
                             case Entity.LEFT:  monster.direction = Entity.RIGHT; break;
                             case Entity.RIGHT: monster.direction = Entity.LEFT;  break;
+                            default: monster.direction = Entity.UP; break;
                         }
-                    } else {
-                        monster.direction = Entity.DOWN;
-                    }
+                    } else { monster.direction = Entity.UP; }
+
                     setBattle();
                     break;
                 }
@@ -138,6 +159,7 @@ public class BattleManager {
                     } else if(battleState == 11 || battleState == 13 || battleState == 4 || battleState == 3) {
                         gp.player.dice[0] = randomGen.nextInt(6) + 1;
                         gp.player.dice[1] = randomGen.nextInt(6) + 1;
+
                         if (battleState == 3 && currentMonster.dice != null) {
                             currentMonster.dice[0] = randomGen.nextInt(6) + 1;
                             currentMonster.dice[1] = randomGen.nextInt(6) + 1;
@@ -149,16 +171,15 @@ public class BattleManager {
                         }
                     }
                     diceCounter++;
-                }
-                else {
+                } else {
                     rolling = false;
                     diceCounter = 0;
 
-                    gp.player.dice[0] = (gp.player.dice != null && gp.player.dice[0] == 0) ? 1 : gp.player.dice[0];
-                    gp.player.dice[1] = (gp.player.dice != null && gp.player.dice[1] == 0) ? 1 : gp.player.dice[1];
+                    gp.player.dice[0] = (gp.player.dice != null && gp.player.dice[0] == 0 && (battleState == 0 || battleState == 11 || battleState == 13 || battleState == 3 || battleState == 4)) ? 1 : gp.player.dice[0];
+                    gp.player.dice[1] = (gp.player.dice != null && gp.player.dice[1] == 0 && (battleState == 11 || battleState == 13 || battleState == 3 || battleState == 4)) ? 1 : gp.player.dice[1];
                     if(currentMonster != null && currentMonster.dice != null) {
-                        currentMonster.dice[0] = (currentMonster.dice[0] == 0) ? 1 : currentMonster.dice[0];
-                        currentMonster.dice[1] = (currentMonster.dice[1] == 0) ? 1 : currentMonster.dice[1];
+                        currentMonster.dice[0] = (currentMonster.dice[0] == 0 && (battleState == 0 || battleState == 2 || battleState == 3)) ? 1 : currentMonster.dice[0];
+                        currentMonster.dice[1] = (currentMonster.dice[1] == 0 && (battleState == 2 || battleState == 3)) ? 1 : currentMonster.dice[1];
                     }
 
                     if(battleState == 0) {
@@ -171,36 +192,68 @@ public class BattleManager {
                         int diceSum = gp.player.dice[0]*10 + gp.player.dice[1];
                         if(gp.player.dice[0] == gp.player.dice[1]) diceSum += 100;
                         currentMonster.hit_point -= calculateDamage(gp.player, currentMonster, diceSum, 1.0);
-                        if(currentMonster.hit_point <= 0) { currentMonster.hit_point = 0; if (currentMonster.symbol == Entity.ZORK) {gp.handleZorkDefeat(monsterIndex); return;} else battleState = 4;} else battleState = 2;
+                        if(currentMonster.hit_point <= 0) {
+                            currentMonster.hit_point = 0;
+                            if (currentMonster.symbol == Entity.ZORK) {gp.handleZorkDefeat(monsterIndex); return;}
+                            else battleState = 4;
+                        } else battleState = 2;
                     }
                     else if (battleState == 13) {
                         if(gp != null) gp.playSE(1);
                         int diceSum = gp.player.dice[0]*10 + gp.player.dice[1];
                         if(gp.player.dice[0] == gp.player.dice[1]) diceSum += 100;
                         currentMonster.hit_point -= calculateDamage(gp.player, currentMonster, diceSum, STRONG_ATTACK_MULTIPLIER);
-                        if(currentMonster.hit_point <= 0) { currentMonster.hit_point = 0; if (currentMonster.symbol == Entity.ZORK) {gp.handleZorkDefeat(monsterIndex); return;} else battleState = 4;} else battleState = 2;
+                        if(currentMonster.hit_point <= 0) {
+                            currentMonster.hit_point = 0;
+                            if (currentMonster.symbol == Entity.ZORK) {gp.handleZorkDefeat(monsterIndex); return;}
+                            else battleState = 4;
+                        } else battleState = 2;
                     }
                     else if(battleState == 2) {
                         if(gp != null) gp.playSE(1);
                         int diceSum = currentMonster.dice[0]*10 + currentMonster.dice[1];
+
                         if(currentMonster.symbol == Entity.ZORK && currentMonster.dice[0] == currentMonster.dice[1]) diceSum += 100;
                         gp.player.hit_point -= calculateDamage(currentMonster, gp.player, diceSum, 1.0);
-                        if(gp.player.hit_point <= 0) { gp.player.hit_point = 0; gp.panelState = gp.END; gp.es.setTitleTexts("You Died :(\nSteps: " + gp.player.steps + " Lvl: " + gp.player.level); return;} else battleState = 1;
+                        if(gp.player.hit_point <= 0) {
+                            gp.player.hit_point = 0;
+                            gp.panelState = gp.END;
+                            gp.es.setTitleTexts("You Died :(\nSteps: " + gp.player.steps + " Lvl: " + gp.player.level);
+                            return;
+                        } else battleState = 1;
                     }
                     else if(battleState == 3) {
                         if(gp != null) gp.playSE(1);
+
                         int pDice = gp.player.dice[0]*10 + gp.player.dice[1]; if(gp.player.dice[0]==gp.player.dice[1]) pDice+=100;
+
                         int mDice = currentMonster.dice[0]*10 + currentMonster.dice[1]; if(currentMonster.symbol==Entity.ZORK && currentMonster.dice[0]==currentMonster.dice[1]) mDice+=100;
+
                         currentMonster.hit_point -= calculateDamage(gp.player, currentMonster, pDice, 1.0);
-                        gp.player.hit_point -= calculateDamage(currentMonster, gp.player, mDice, 1.0);
-                        if(gp.player.hit_point <= 0) { gp.player.hit_point = 0; gp.panelState = gp.END; gp.es.setTitleTexts("You Died :(\nSteps: " + gp.player.steps + " Lvl: " + gp.player.level); return;}
-                        if(currentMonster.hit_point <= 0) { currentMonster.hit_point = 0; if (currentMonster.symbol == Entity.ZORK) {gp.handleZorkDefeat(monsterIndex); return;} else battleState = 4;} else battleState = 0;
+
+                        if (currentMonster.hit_point > 0) {
+                            gp.player.hit_point -= calculateDamage(currentMonster, gp.player, mDice, 1.0);
+                        }
+
+                        if(gp.player.hit_point <= 0) {
+                            gp.player.hit_point = 0;
+                            gp.panelState = gp.END;
+                            gp.es.setTitleTexts("You Died :(\nSteps: " + gp.player.steps + " Lvl: " + gp.player.level);
+                            return;
+                        }
+
+                        if(currentMonster.hit_point <= 0) {
+                            currentMonster.hit_point = 0;
+                            if (currentMonster.symbol == Entity.ZORK) {gp.handleZorkDefeat(monsterIndex); return;}
+                            else battleState = 4;
+                        } else battleState = 0;
                     }
                     else if(battleState == 4) {
                         int heal = gp.player.dice[0]*10 + gp.player.dice[1];
+                        int oldHp = gp.player.hit_point;
                         gp.player.hit_point += heal;
                         if (gp.player.hit_point > gp.player.max_hit_point) gp.player.hit_point = gp.player.max_hit_point;
-                        lastPlayerActionInfo = "Player healed for " + heal + " HP.";
+                        lastPlayerActionInfo = "Player healed for " + (gp.player.hit_point - oldHp) + " HP.";
                         messageTimer = MESSAGE_DURATION;
 
                     }
@@ -211,53 +264,84 @@ public class BattleManager {
                     }
                 }
             }
+
             else {
                 if(battleState == 0) {
                     if(gp.keyH.rPressed) { gp.keyH.rPressed = false; rolling = true; clearMessages(); }
                 }
                 else if (battleState == 1) {
+
                     if (gp.keyH.rPressed) {
                         gp.keyH.rPressed = false; battleState = 11; rolling = true; clearMessages();
-                    } else if (gp.keyH.spell1Pressed) {
+                    }
+
+                    else if (gp.keyH.spell1Pressed) {
                         gp.keyH.spell1Pressed = false;
                         if (gp.player.canCastHeal(HEAL_MANA_COST)) {
                             gp.player.castHeal(HEAL_MANA_COST, HEAL_BASE_AMOUNT);
                             lastPlayerActionInfo = "Player casts Heal! (+ " + (HEAL_BASE_AMOUNT + gp.player.intelligence * 2) + " HP)";
                             messageTimer = MESSAGE_DURATION;
-
                             battleState = 2;
                         } else {
                             lastPlayerActionInfo = "Not enough mana for Heal!"; messageTimer = MESSAGE_DURATION;
 
                         }
                         clearMessages(false);
-                    } else if (gp.keyH.spell2Pressed) {
+                    }
+
+                    else if (gp.keyH.spell2Pressed) {
                         gp.keyH.spell2Pressed = false;
                         if (gp.player.canCastStrongAttack(STRONG_ATTACK_MANA_COST)) {
                             gp.player.consumeManaForStrongAttack(STRONG_ATTACK_MANA_COST);
-                            battleState = 13; rolling = true;
-
+                            battleState = 13;
+                            rolling = true;
                         } else {
                             lastPlayerActionInfo = "Not enough mana for Strong Attack!"; messageTimer = MESSAGE_DURATION;
 
                         }
                         clearMessages();
                     }
+
+                    else if (gp.keyH.usePotionPressed) {
+                        gp.keyH.usePotionPressed = false;
+                        if (gp.player.healingPotions > 0) {
+                            gp.player.useHealingPotion();
+                            lastPlayerActionInfo = "Player used a Potion.";
+                            messageTimer = MESSAGE_DURATION;
+                            battleState = 2;
+                        } else {
+                            lastPlayerActionInfo = "No potions left!"; messageTimer = MESSAGE_DURATION;
+
+                        }
+                        clearMessages(false);
+                    }
                 }
                 else if(battleState == 2) {
                     pauseCounter++;
-                    if(pauseCounter >= 60) { pauseCounter = 0; rolling = true; clearMessages(); }
+                    if(pauseCounter >= 60) {
+                        pauseCounter = 0;
+                        rolling = true;
+                        clearMessages();
+                    }
                 }
                 else if(battleState == 3) {
                     if(gp.keyH.rPressed) { gp.keyH.rPressed = false; rolling = true; clearMessages(); }
                 }
                 else if(battleState == 4) {
+
                     boolean diceAlreadyRolledForHeal = (gp.player.dice != null && (gp.player.dice[0] != 0 || gp.player.dice[1] != 0));
+
                     if (!diceAlreadyRolledForHeal && !rolling) {
+
                         if(gp.keyH.rPressed) {
-                            gp.keyH.rPressed = false; rolling = true; clearMessages(false);
+                            gp.keyH.rPressed = false;
+                            rolling = true;
+                            clearMessages(false);
                         }
-                    } else if (diceAlreadyRolledForHeal && !rolling) {
+                    }
+
+                    else if (diceAlreadyRolledForHeal && !rolling) {
+
                         pauseCounter++;
                         if (pauseCounter >= MESSAGE_DURATION + 20) {
                             pauseCounter = 0;
@@ -270,12 +354,14 @@ public class BattleManager {
         }
     }
 
+    public void clearMessages() {
+        clearMessages(true);
+    }
+
     private void clearMessages(boolean clearPlayerToo) {
         if (clearPlayerToo && lastPlayerActionInfo != null) lastPlayerActionInfo = "";
         if (lastMonsterAttackInfo != null) lastMonsterAttackInfo = "";
-    }
-    private void clearMessages() {
-        clearMessages(true);
+
     }
 
     public String getLastPlayerActionInfo() { return (messageTimer > 0 && lastPlayerActionInfo != null && !lastPlayerActionInfo.isEmpty()) ? lastPlayerActionInfo : ""; }
